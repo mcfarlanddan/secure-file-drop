@@ -1,0 +1,22 @@
+{
+  "name": "secure-file-drop",
+  "version": "1.0.0",
+  "description": "Minimal file upload system with S3 multipart uploads",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "aws-cdk": "^2.1112.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.244.0",
+    "constructs": "^10.3.0",
+    "esbuild": "^0.27.4",
+    "source-map-support": "^0.5.21"
+  }
+}

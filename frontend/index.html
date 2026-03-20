@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure File Drop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Secure File Drop</h1>
+      <p>Upload files up to 5TB securely</p>
+    </header>
+
+    <form id="upload-form">
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" name="email" required placeholder="your@email.com">
+      </div>
+
+      <div class="form-group">
+        <label for="title">Title (optional)</label>
+        <input type="text" id="title" name="title" placeholder="Project files, Photos, etc.">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description (optional)</label>
+        <textarea id="description" name="description" rows="3" placeholder="Add any notes about your upload..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="file">Select File *</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="file" name="file" required>
+          <div class="file-info" id="file-info">No file selected</div>
+        </div>
+      </div>
+
+      <button type="submit" id="submit-btn">Upload File</button>
+    </form>
+
+    <div id="progress-section" class="hidden">
+      <div class="progress-header">
+        <span id="progress-filename"></span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-details">
+        <span id="progress-uploaded">0 MB</span> / <span id="progress-total">0 MB</span>
+        <span id="progress-speed"></span>
+      </div>
+      <button type="button" id="cancel-btn" class="cancel-btn">Cancel Upload</button>
+    </div>
+
+    <div id="status-message" class="hidden"></div>
+
+    <div id="success-section" class="hidden">
+      <div class="success-icon">&#10003;</div>
+      <h2>Upload Complete!</h2>
+      <p id="success-filename"></p>
+      <p class="success-note">You will receive an email confirmation shortly.</p>
+      <button type="button" id="another-btn" class="another-btn">Upload Another File</button>
+    </div>
+  </div>
+
+  <script src="upload.js"></script>
+</body>
+</html>

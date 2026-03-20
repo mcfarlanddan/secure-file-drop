@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# TypeScript compiled output
+*.js
+*.d.ts
+*.js.map
+
+# Keep these JS files (frontend)
+!frontend/**/*.js
+
+# CDK
+cdk.out/
+.cdk.staging/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+credentials.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
