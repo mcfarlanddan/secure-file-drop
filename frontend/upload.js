@@ -21,10 +21,16 @@ const statusMessage = document.getElementById('status-message');
 const successSection = document.getElementById('success-section');
 const successFilename = document.getElementById('success-filename');
 const anotherBtn = document.getElementById('another-btn');
+const resumeBanner = document.getElementById('resume-banner');
+const resumeFilename = document.getElementById('resume-filename');
+const resumeBtn = document.getElementById('resume-btn');
+const freshBtn = document.getElementById('fresh-btn');
+const resumeError = document.getElementById('resume-error');
 
 // State
 let currentUpload = null;
 let abortController = null;
+let savedUpload = null; // Parsed localStorage state for resume
 
 // Format bytes to human readable
 function formatBytes(bytes) {
@@ -87,7 +93,8 @@ async function uploadPart(url, chunk, partNumber, signal) {
 }
 
 // Main upload function
-async function startUpload(file, email, title, description) {
+// resumeState: optional { uploadId, key, submissionId, completedParts[] }
+async function startUpload(file, email, title, description, resumeState = null) {
   abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -104,29 +111,55 @@ async function startUpload(file, email, title, description) {
   progressTotal.textContent = formatBytes(file.size);
 
   try {
-    // Step 1: Initiate multipart upload
-    const initResponse = await apiCall('/initiate', {
-      email,
-      title,
-      description,
-      fileName: file.name,
-      fileSize: file.size,
-      contentType: file.type || 'application/octet-stream',
-    });
+    if (resumeState) {
+      // Resume existing upload
+      currentUpload = {
+        submissionId: resumeState.submissionId,
+        uploadId: resumeState.uploadId,
+        key: resumeState.key,
+      };
+      // Add already completed parts
+      for (const p of (resumeState.completedParts || [])) {
+        completedParts.push({ PartNumber: p.partNumber, ETag: p.etag });
+        uploadedBytes += p.size || 0;
+      }
+      // Update progress to show already uploaded
+      const percent = Math.round((uploadedBytes / file.size) * 100);
+      progressPercent.textContent = `${percent}%`;
+      progressFill.style.width = `${percent}%`;
+      progressUploaded.textContent = formatBytes(uploadedBytes);
+    } else {
+      // Step 1: Initiate multipart upload
+      const initResponse = await apiCall('/initiate', {
+        email,
+        title,
+        description,
+        fileName: file.name,
+        fileSize: file.size,
+        contentType: file.type || 'application/octet-stream',
+      });
 
-    currentUpload = {
-      submissionId: initResponse.submissionId,
-      uploadId: initResponse.uploadId,
-      key: initResponse.key,
-    };
+      currentUpload = {
+        submissionId: initResponse.submissionId,
+        uploadId: initResponse.uploadId,
+        key: initResponse.key,
+      };
 
-    // Save to localStorage for potential resume
-    localStorage.setItem('securefiledrop_upload', JSON.stringify(currentUpload));
+      // Save to localStorage for potential resume (include file info for validation)
+      localStorage.setItem('securefiledrop_upload', JSON.stringify({
+        ...currentUpload,
+        fileName: file.name,
+        fileSize: file.size,
+      }));
+    }
 
     // Step 2: Upload parts with concurrency control
+    const completedPartNumbers = new Set(completedParts.map(p => p.PartNumber));
     const partQueue = [];
     for (let i = 1; i <= totalParts; i++) {
-      partQueue.push(i);
+      if (!completedPartNumbers.has(i)) {
+        partQueue.push(i);
+      }
     }
 
     // Process parts in batches
@@ -278,33 +311,114 @@ anotherBtn.addEventListener('click', () => {
   form.classList.remove('hidden');
 });
 
-// Check for pending upload on page load (resume support)
-window.addEventListener('load', async () => {
+// Check for pending upload on page load (lazy - no API call)
+window.addEventListener('load', () => {
   const saved = localStorage.getItem('securefiledrop_upload');
   if (saved) {
-    const upload = JSON.parse(saved);
-    // Check if upload is still valid
     try {
-      const status = await apiCall('/status', {
-        uploadId: upload.uploadId,
-        key: upload.key,
-      });
-      if (status.completedParts && status.completedParts.length > 0) {
-        const resume = confirm(
-          `Found incomplete upload for "${upload.key.split('/').pop()}". ` +
-          `${status.completedParts.length} parts already uploaded. Resume?`
-        );
-        if (!resume) {
-          localStorage.removeItem('securefiledrop_upload');
-        }
-        // Note: Full resume implementation would need to re-select file
-        // For simplicity, just clearing for now
-        localStorage.removeItem('securefiledrop_upload');
+      savedUpload = JSON.parse(saved);
+      if (savedUpload.uploadId && savedUpload.key && savedUpload.submissionId) {
+        resumeFilename.textContent = savedUpload.fileName || savedUpload.key.split('/').pop();
+        resumeBanner.classList.remove('hidden');
       } else {
+        savedUpload = null;
         localStorage.removeItem('securefiledrop_upload');
       }
     } catch (e) {
       localStorage.removeItem('securefiledrop_upload');
     }
   }
+});
+
+// Resume button handler
+resumeBtn.addEventListener('click', async () => {
+  resumeError.classList.add('hidden');
+
+  const file = fileInput.files[0];
+  if (!file) {
+    resumeError.textContent = 'Please select the file to resume.';
+    resumeError.classList.remove('hidden');
+    return;
+  }
+
+  const expectedFilename = savedUpload.fileName || savedUpload.key.split('/').pop();
+  if (file.name !== expectedFilename) {
+    resumeError.textContent = `Expected "${expectedFilename}" but got "${file.name}".`;
+    resumeError.classList.remove('hidden');
+    return;
+  }
+
+  if (savedUpload.fileSize && file.size !== savedUpload.fileSize) {
+    resumeError.textContent = `File size mismatch. Expected ${formatBytes(savedUpload.fileSize)}, got ${formatBytes(file.size)}.`;
+    resumeError.classList.remove('hidden');
+    return;
+  }
+
+  const email = document.getElementById('email').value;
+  if (!email) {
+    resumeError.textContent = 'Please enter your email.';
+    resumeError.classList.remove('hidden');
+    return;
+  }
+
+  resumeBtn.disabled = true;
+  freshBtn.disabled = true;
+
+  try {
+    const status = await apiCall('/status', {
+      uploadId: savedUpload.uploadId,
+      key: savedUpload.key,
+    });
+
+    if (status.status === 'completed_or_aborted') {
+      resumeError.textContent = 'Upload was already completed or cancelled. Please start fresh.';
+      resumeError.classList.remove('hidden');
+      localStorage.removeItem('securefiledrop_upload');
+      savedUpload = null;
+      resumeBanner.classList.add('hidden');
+      resumeBtn.disabled = false;
+      freshBtn.disabled = false;
+      return;
+    }
+
+    resumeBanner.classList.add('hidden');
+
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+
+    await startUpload(file, email, title, description, {
+      uploadId: savedUpload.uploadId,
+      key: savedUpload.key,
+      submissionId: savedUpload.submissionId,
+      completedParts: status.completedParts,
+    });
+
+  } catch (error) {
+    resumeError.textContent = `Failed to resume: ${error.message}`;
+    resumeError.classList.remove('hidden');
+    currentUpload = null;
+    resumeBtn.disabled = false;
+    freshBtn.disabled = false;
+  }
+});
+
+// Start fresh button handler
+freshBtn.addEventListener('click', async () => {
+  freshBtn.disabled = true;
+  resumeBtn.disabled = true;
+
+  try {
+    await apiCall('/abort', {
+      uploadId: savedUpload.uploadId,
+      key: savedUpload.key,
+    });
+  } catch (e) {
+    console.warn('Failed to abort on server:', e);
+  }
+
+  localStorage.removeItem('securefiledrop_upload');
+  savedUpload = null;
+  resumeBanner.classList.add('hidden');
+  freshBtn.disabled = false;
+  resumeBtn.disabled = false;
 });

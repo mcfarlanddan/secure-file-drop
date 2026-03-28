@@ -287,3 +287,79 @@ button[type="submit"]:disabled {
     font-size: 2rem;
   }
 }
+
+/* Resume Banner */
+#resume-banner {
+  background: rgba(79, 70, 229, 0.1);
+  border: 1px solid rgba(79, 70, 229, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.resume-info {
+  margin-bottom: 12px;
+  color: #c8c8d8;
+}
+
+.resume-info strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+#resume-filename {
+  color: #8b8b9e;
+  font-size: 0.875rem;
+  word-break: break-all;
+}
+
+.resume-actions {
+  display: flex;
+  gap: 10px;
+}
+
+#resume-btn, #fresh-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+#resume-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff;
+}
+
+#resume-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+#fresh-btn {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+}
+
+#fresh-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+#resume-btn:disabled, #fresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#resume-error {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 0.875rem;
+}

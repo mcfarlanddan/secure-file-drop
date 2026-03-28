@@ -13,6 +13,18 @@
       <p>Upload files up to 5TB securely</p>
     </header>
 
+    <div id="resume-banner" class="hidden">
+      <div class="resume-info">
+        <strong>Incomplete upload found:</strong>
+        <span id="resume-filename"></span>
+      </div>
+      <div class="resume-actions">
+        <button type="button" id="resume-btn">Resume</button>
+        <button type="button" id="fresh-btn">Start Fresh</button>
+      </div>
+      <div id="resume-error" class="hidden"></div>
+    </div>
+
     <form id="upload-form">
       <div class="form-group">
         <label for="email">Email Address *</label>
