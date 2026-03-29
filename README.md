@@ -407,22 +407,22 @@ See [SECURITY.md](./SECURITY.md) for comprehensive security documentation.
 
 ## Cost Estimate
 
-For low-to-medium volume usage (pay-as-you-go pricing):
+For low volume usage (10 × 10GB files/month):
 
 | Service | Usage | Monthly Cost |
-|---------|-------|--------------|
-| CloudFront | Free tier (1TB transfer, 10M requests) | $0 |
-| Lambda | 100K invocations | ~$0.20 |
+|---------|-------|-------------:|
+| CloudFront | Static site + API only | $0 |
+| Lambda | ~180 invocations | <$0.01 |
 | S3 Storage | 100GB | ~$2.30 |
-| S3 Requests | 10K each | ~$0.05 |
-| SNS | 1000 emails | ~$0.10 |
-| CloudWatch Logs | 5GB ingested | ~$2.50 |
-| **Total** | | **~$5.15** |
+| S3 Requests | ~1,600 PUT/POST | ~$0.01 |
+| SNS | 10 emails | $0 |
+| CloudWatch Logs | ~120KB | <$0.01 |
+| **Total** | | **~$2.32** |
 
 **Notes**:
-- CloudFront pay-as-you-go free tier: 1TB data transfer + 10M requests/month (always free)
-- CloudWatch Logs cost scales with upload volume; enable retention policies to control costs
-- Beyond free tier, pay-as-you-go charges apply (see [CloudFront pricing](https://aws.amazon.com/cloudfront/pricing/))
+- S3 storage is essentially the only cost—uploads bypass CloudFront via presigned URLs
+- CloudFront free tier: 1TB data transfer + 10M requests/month (static site + API only)
+- All other services are negligible at low volume
 
 ## Development
 
