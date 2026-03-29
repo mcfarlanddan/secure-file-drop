@@ -3,81 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure file upload service supporting files up to 5TB with resume capability">
+
+  <!-- Security Headers (X-Frame-Options and frame-ancestors must be set via HTTP headers, not meta tags) -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <!-- Content Security Policy
+       - default-src 'self': Only load resources from same origin
+       - script-src 'self': Only execute scripts from same origin
+       - style-src 'self' 'unsafe-inline': Allow inline styles (needed for dynamic progress bar)
+       - connect-src 'self' https://*.amazonaws.com: Allow API calls and S3 presigned URLs
+       - img-src 'self' data:: Allow images from same origin and data URIs
+       - form-action 'self': Only submit forms to same origin
+       - base-uri 'self': Restrict base URL to same origin
+       - upgrade-insecure-requests: Force HTTPS
+       Note: frame-ancestors must be set via HTTP header, not meta tag
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    connect-src 'self' https://*.amazonaws.com https://*.s3.amazonaws.com;
+    img-src 'self' data:;
+    font-src 'self';
+    form-action 'self';
+    base-uri 'self';
+    upgrade-insecure-requests;
+  ">
+
+  <meta name="theme-color" content="#1a1a2e">
   <title>Secure File Drop</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Skip link for keyboard navigation -->
+  <a href="#upload-form" class="skip-link">Skip to upload form</a>
+
+  <!-- ARIA live region for screen reader announcements -->
+  <div id="aria-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
   <div class="container">
     <header>
       <h1>Secure File Drop</h1>
       <p>Upload files up to 5TB securely</p>
     </header>
 
-    <div id="resume-banner" class="hidden">
-      <div class="resume-info">
-        <strong>Incomplete upload found:</strong>
-        <span id="resume-filename"></span>
-      </div>
-      <div class="resume-actions">
-        <button type="button" id="resume-btn">Resume</button>
-        <button type="button" id="fresh-btn">Start Fresh</button>
-      </div>
-      <div id="resume-error" class="hidden"></div>
-    </div>
-
-    <form id="upload-form">
-      <div class="form-group">
-        <label for="email">Email Address *</label>
-        <input type="email" id="email" name="email" required placeholder="your@email.com">
-      </div>
-
-      <div class="form-group">
-        <label for="title">Title (optional)</label>
-        <input type="text" id="title" name="title" placeholder="Project files, Photos, etc.">
-      </div>
-
-      <div class="form-group">
-        <label for="description">Description (optional)</label>
-        <textarea id="description" name="description" rows="3" placeholder="Add any notes about your upload..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="file">Select File *</label>
-        <div class="file-input-wrapper">
-          <input type="file" id="file" name="file" required>
-          <div class="file-info" id="file-info">No file selected</div>
+    <main id="main-content">
+      <!-- Resume Banner -->
+      <div id="resume-banner" class="hidden" role="alert">
+        <div class="resume-info">
+          <strong>Incomplete upload found:</strong>
+          <span id="resume-filename"></span>
         </div>
+        <div class="resume-actions">
+          <button type="button" id="resume-btn" aria-describedby="resume-filename">Resume</button>
+          <button type="button" id="fresh-btn">Start Fresh</button>
+        </div>
+        <div id="resume-error" class="hidden" role="alert"></div>
       </div>
 
-      <button type="submit" id="submit-btn">Upload File</button>
-    </form>
+      <!-- Validation Message -->
+      <div id="validation-message" class="hidden" role="alert" aria-live="assertive" tabindex="-1"></div>
 
-    <div id="progress-section" class="hidden">
-      <div class="progress-header">
-        <span id="progress-filename"></span>
-        <span id="progress-percent">0%</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
-      <div class="progress-details">
-        <span id="progress-uploaded">0 MB</span> / <span id="progress-total">0 MB</span>
-        <span id="progress-speed"></span>
-      </div>
-      <button type="button" id="cancel-btn" class="cancel-btn">Cancel Upload</button>
-    </div>
+      <!-- Upload Form -->
+      <form id="upload-form" aria-label="File upload form">
+        <div class="form-group">
+          <label for="email">Email Address <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="your@email.com"
+            autocomplete="email"
+            aria-required="true"
+          >
+        </div>
 
-    <div id="status-message" class="hidden"></div>
+        <div class="form-group">
+          <label for="title">Title <span class="optional">(optional)</span></label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Project files, Photos, etc."
+            autocomplete="off"
+          >
+        </div>
 
-    <div id="success-section" class="hidden">
-      <div class="success-icon">&#10003;</div>
-      <h2>Upload Complete!</h2>
-      <p id="success-filename"></p>
-      <p class="success-note">You will receive an email confirmation shortly.</p>
-      <button type="button" id="another-btn" class="another-btn">Upload Another File</button>
-    </div>
+        <div class="form-group">
+          <label for="description">Description <span class="optional">(optional)</span></label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            placeholder="Add any notes about your upload..."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="file">Select File <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
+          <div class="file-input-wrapper">
+            <input
+              type="file"
+              id="file"
+              name="file"
+              required
+              aria-required="true"
+              aria-describedby="file-info"
+            >
+            <div class="file-info" id="file-info" aria-live="polite">No file selected</div>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn">Upload File</button>
+      </form>
+
+      <!-- Progress Section -->
+      <div id="progress-section" class="hidden" role="region" aria-label="Upload progress" tabindex="-1">
+        <div class="progress-header">
+          <span id="progress-filename"></span>
+          <span id="progress-percent" aria-live="polite">0%</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Upload progress">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-details">
+          <span id="progress-uploaded">0 MB</span> / <span id="progress-total">0 MB</span>
+          <span id="progress-speed" aria-label="Upload speed"></span>
+        </div>
+        <button type="button" id="cancel-btn" class="cancel-btn" aria-label="Cancel upload">Cancel Upload</button>
+      </div>
+
+      <!-- Status Message -->
+      <div id="status-message" class="hidden" role="alert"></div>
+
+      <!-- Success Section -->
+      <div id="success-section" class="hidden" role="region" aria-label="Upload complete" tabindex="-1">
+        <div class="success-icon" aria-hidden="true">&#10003;</div>
+        <h2>Upload Complete!</h2>
+        <p id="success-filename"></p>
+        <p id="success-note" class="success-note">You will receive an email confirmation shortly.</p>
+        <button type="button" id="another-btn" class="another-btn">Upload Another File</button>
+      </div>
+    </main>
   </div>
 
-  <script src="upload.js"></script>
+  <noscript>
+    <div class="noscript-warning">
+      <h2>JavaScript Required</h2>
+      <p>This application requires JavaScript to be enabled for file uploads to work. Please enable JavaScript in your browser settings and reload the page.</p>
+    </div>
+  </noscript>
+
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

@@ -4,19 +4,40 @@
   "description": "Minimal file upload system with S3 multipart uploads",
   "scripts": {
     "build": "tsc",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build && npm run build:frontend",
     "watch": "tsc -w",
     "cdk": "cdk",
-    "test": "echo \"No tests configured\" && exit 0"
+    "predeploy": "rm -rf cdk.out && npm run build:frontend",
+    "deploy": "cdk deploy",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:frontend": "cd frontend && npm test",
+    "test:frontend:watch": "cd frontend && npm run test:watch",
+    "test:frontend:coverage": "cd frontend && npm run test:coverage",
+    "test:all": "npm test && npm run test:frontend",
+    "test:integration": "./scripts/integration-test.sh",
+    "dev:frontend": "cd frontend && npm run dev",
+    "postinstall": "cd frontend && npm install"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1019.0",
+    "@aws-sdk/client-sns": "^3.1019.0",
+    "@aws-sdk/s3-request-presigner": "^3.1019.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^25.5.0",
     "aws-cdk": "^2.1112.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.6",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.244.0",
     "constructs": "^10.3.0",
     "esbuild": "^0.27.4",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "zod": "^3.24.4"
   }
 }

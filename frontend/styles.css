@@ -181,7 +181,6 @@ button[type="submit"]:disabled {
 }
 
 #progress-speed {
-  float: right;
   color: #6b6b7b;
 }
 
@@ -259,6 +258,14 @@ button[type="submit"]:disabled {
   color: #8b8b9e;
   font-size: 0.875rem;
   margin-bottom: 24px;
+}
+
+.success-note.warning {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .another-btn {
@@ -362,4 +369,111 @@ button[type="submit"]:disabled {
   border-radius: 6px;
   color: #ef4444;
   font-size: 0.875rem;
+}
+
+/* ============================================================================
+   ACCESSIBILITY
+   ============================================================================ */
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link - visible only when focused */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  padding: 8px 16px;
+  background: #4f46e5;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 100;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Optional label text styling */
+.optional {
+  color: #6b6b7b;
+  font-weight: 400;
+}
+
+/* Focus indicators for better keyboard navigation */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   VALIDATION MESSAGE
+   ============================================================================ */
+
+#validation-message {
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+#validation-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+/* ============================================================================
+   NOSCRIPT FALLBACK
+   ============================================================================ */
+
+.noscript-warning {
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 40px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  text-align: center;
+  color: #e8e8e8;
+}
+
+.noscript-warning h2 {
+  color: #ef4444;
+  margin-bottom: 16px;
+}
+
+.noscript-warning p {
+  color: #c8c8d8;
+  line-height: 1.6;
+}
+
+/* ============================================================================
+   PROGRESS DETAILS - FLEXBOX FIX
+   ============================================================================ */
+
+/* Replace float with flexbox for progress details */
+.progress-details {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: #8b8b9e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
