@@ -367,7 +367,7 @@ describe('SecureFileDropStack', () => {
     it('should output WebsiteUrl', () => {
       const outputs = template.Outputs as Record<string, Record<string, unknown>>;
       expect(outputs.WebsiteUrl).toBeDefined();
-      expect(outputs.WebsiteUrl.Description).toBe('CloudFront URL for the website');
+      expect(outputs.WebsiteUrl.Description).toBe('Website URL');
     });
 
     it('should output LambdaFunctionUrl', () => {

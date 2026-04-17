@@ -137,13 +137,38 @@ npm run deploy -- \
 
 > **Note**: AWS requires 100 unreserved concurrent executions per account. New accounts often have only 10 total quota, so reserved concurrency is disabled by default. [Request a quota increase](https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html) if needed.
 
+### With Custom Domain (Optional)
+
+To use your own domain instead of the CloudFront URL:
+
+1. **Create an ACM certificate** in `us-east-1` (required for CloudFront):
+   ```bash
+   aws acm request-certificate \
+     --domain-name drop.example.com \
+     --validation-method DNS \
+     --region us-east-1
+   ```
+
+2. **Add the DNS validation record** to your Route53 hosted zone (check ACM console for the CNAME)
+
+3. **Deploy with domain parameters**:
+   ```bash
+   npm run deploy -- \
+     -c notificationEmail=your@email.com \
+     -c domainName=drop.example.com \
+     -c certificateArn=arn:aws:acm:us-east-1:ACCOUNT:certificate/CERT-ID
+   ```
+
+4. **Add CNAME record** pointing your domain to the CloudFront distribution (shown in `DnsRecord` output)
+
 ### Stack Outputs
 
 After deployment, you'll see:
 
 | Output | Description |
 |--------|-------------|
-| `WebsiteUrl` | CloudFront URL for the upload page |
+| `WebsiteUrl` | Website URL (custom domain or CloudFront) |
+| `DnsRecord` | CNAME record to add (only with custom domain) |
 | `LambdaFunctionUrl` | Direct Lambda endpoint (bypasses CloudFront) |
 | `BucketName` | S3 bucket name |
 | `SnsTopicArn` | SNS topic for notifications |

@@ -9,6 +9,7 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { RETENTION_DAYS } from '../shared';
@@ -32,6 +33,23 @@ export class SecureFileDropStack extends cdk.Stack {
         'Deploy with: npx cdk deploy -c notificationEmail=your@email.com'
       );
     }
+
+    // Optional custom domain configuration
+    const domainName = this.node.tryGetContext('domainName') as string | undefined;
+    const certificateArn = this.node.tryGetContext('certificateArn') as string | undefined;
+
+    // Validate: if one is provided, both must be provided
+    if ((domainName && !certificateArn) || (!domainName && certificateArn)) {
+      throw new Error(
+        'Both domainName and certificateArn must be provided together. ' +
+        'Deploy with: -c domainName=drop.example.com -c certificateArn=arn:aws:acm:us-east-1:...'
+      );
+    }
+
+    // Import certificate if custom domain is configured
+    const certificate = certificateArn
+      ? acm.Certificate.fromCertificateArn(this, 'Certificate', certificateArn)
+      : undefined;
 
     // CORS Strategy:
     // - S3 CORS uses '*' because presigned URLs are already authenticated (signed, time-limited)
@@ -181,6 +199,9 @@ export class SecureFileDropStack extends cdk.Stack {
     // CloudFront Distribution
     // Uses pay-as-you-go pricing (1TB data transfer + 10M requests/month free tier)
     const distribution = new cloudfront.Distribution(this, 'CDN', {
+      // Custom domain configuration (optional)
+      domainNames: domainName ? [domainName] : undefined,
+      certificate,
       defaultBehavior: {
         origin: s3Origin,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -289,9 +310,17 @@ export class SecureFileDropStack extends cdk.Stack {
     // =========================================================================
 
     new cdk.CfnOutput(this, 'WebsiteUrl', {
-      value: `https://${distribution.distributionDomainName}`,
-      description: 'CloudFront URL for the website',
+      value: domainName ? `https://${domainName}` : `https://${distribution.distributionDomainName}`,
+      description: 'Website URL',
     });
+
+    // Output DNS configuration hint if custom domain is used
+    if (domainName) {
+      new cdk.CfnOutput(this, 'DnsRecord', {
+        value: `CNAME ${domainName} -> ${distribution.distributionDomainName}`,
+        description: 'Add this CNAME record to your DNS',
+      });
+    }
 
     new cdk.CfnOutput(this, 'LambdaFunctionUrl', {
       value: functionUrl.url,

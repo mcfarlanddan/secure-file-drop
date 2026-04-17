@@ -6,9 +6,9 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: #fdf8f4;
   min-height: 100vh;
-  color: #e8e8e8;
+  color: #1e293b;
   line-height: 1.6;
 }
 
@@ -26,12 +26,12 @@ header {
 header h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #fff;
+  color: #1e293b;
   margin-bottom: 8px;
 }
 
 header p {
-  color: #8b8b9e;
+  color: #64748b;
   font-size: 1rem;
 }
 
@@ -43,7 +43,7 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: #c8c8d8;
+  color: #334155;
 }
 
 input[type="email"],
@@ -51,10 +51,10 @@ input[type="text"],
 textarea {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #fff;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  color: #fff;
+  color: #1e293b;
   font-size: 1rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -62,13 +62,13 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #6b6b7b;
+  color: #94a3b8;
 }
 
 .file-input-wrapper {
@@ -78,49 +78,50 @@ textarea::placeholder {
 input[type="file"] {
   width: 100%;
   padding: 40px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 2px dashed rgba(255, 255, 255, 0.15);
+  background: #fff;
+  border: 2px dashed #e2e8f0;
   border-radius: 8px;
-  color: #fff;
+  color: #1e293b;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
 }
 
 input[type="file"]:hover {
-  border-color: #4f46e5;
-  background: rgba(79, 70, 229, 0.05);
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.03);
 }
 
 .file-input-wrapper.drag-over input[type="file"] {
   border-color: #22c55e;
   border-width: 3px;
-  background: rgba(34, 197, 94, 0.15);
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.08);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
 }
 
 .file-info {
   margin-top: 8px;
   font-size: 0.875rem;
-  color: #8b8b9e;
+  color: #64748b;
 }
 
 button[type="submit"] {
   width: 100%;
   padding: 14px 24px;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: #f97316;
   border: none;
   border-radius: 8px;
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
   margin-top: 10px;
 }
 
 button[type="submit"]:hover:not(:disabled) {
+  background: #ea580c;
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
 }
 
 button[type="submit"]:disabled {
@@ -133,10 +134,12 @@ button[type="submit"]:disabled {
 }
 
 #progress-section {
-  background: rgba(255, 255, 255, 0.05);
+  background: #fff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px;
   margin-top: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .progress-header {
@@ -147,7 +150,7 @@ button[type="submit"]:disabled {
 }
 
 #progress-filename {
-  color: #c8c8d8;
+  color: #334155;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -155,20 +158,20 @@ button[type="submit"]:disabled {
 }
 
 #progress-percent {
-  color: #4f46e5;
+  color: #f97316;
   font-weight: 600;
 }
 
 .progress-bar {
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #f1f5f9;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+  background: #f97316;
   border-radius: 4px;
   width: 0%;
   transition: width 0.3s ease;
@@ -177,11 +180,14 @@ button[type="submit"]:disabled {
 .progress-details {
   margin-top: 12px;
   font-size: 0.875rem;
-  color: #8b8b9e;
+  color: #64748b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #progress-speed {
-  color: #6b6b7b;
+  color: #94a3b8;
 }
 
 .cancel-btn {
@@ -197,7 +203,7 @@ button[type="submit"]:disabled {
 }
 
 .cancel-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.05);
 }
 
 #status-message {
@@ -208,21 +214,21 @@ button[type="submit"]:disabled {
 }
 
 #status-message.success {
-  background: rgba(34, 197, 94, 0.1);
+  background: rgba(34, 197, 94, 0.08);
   border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #22c55e;
+  color: #16a34a;
 }
 
 #status-message.error {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+  color: #dc2626;
 }
 
 #success-section {
   text-align: center;
   padding: 40px 20px;
-  background: rgba(34, 197, 94, 0.1);
+  background: rgba(34, 197, 94, 0.08);
   border: 2px solid rgba(34, 197, 94, 0.3);
   border-radius: 12px;
   margin-top: 20px;
@@ -232,7 +238,7 @@ button[type="submit"]:disabled {
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: #22c55e;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -242,27 +248,27 @@ button[type="submit"]:disabled {
 }
 
 #success-section h2 {
-  color: #22c55e;
+  color: #16a34a;
   font-size: 1.75rem;
   margin-bottom: 12px;
 }
 
 #success-filename {
-  color: #c8c8d8;
+  color: #334155;
   font-size: 1rem;
   margin-bottom: 8px;
   word-break: break-all;
 }
 
 .success-note {
-  color: #8b8b9e;
+  color: #64748b;
   font-size: 0.875rem;
   margin-bottom: 24px;
 }
 
 .success-note.warning {
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.08);
   padding: 12px;
   border-radius: 6px;
   border: 1px solid rgba(245, 158, 11, 0.3);
@@ -270,19 +276,20 @@ button[type="submit"]:disabled {
 
 .another-btn {
   padding: 14px 32px;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: #f97316;
   border: none;
   border-radius: 8px;
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .another-btn:hover {
+  background: #ea580c;
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
 }
 
 @media (max-width: 480px) {
@@ -297,8 +304,8 @@ button[type="submit"]:disabled {
 
 /* Resume Banner */
 #resume-banner {
-  background: rgba(79, 70, 229, 0.1);
-  border: 1px solid rgba(79, 70, 229, 0.3);
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.3);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 24px;
@@ -306,7 +313,7 @@ button[type="submit"]:disabled {
 
 .resume-info {
   margin-bottom: 12px;
-  color: #c8c8d8;
+  color: #334155;
 }
 
 .resume-info strong {
@@ -315,7 +322,7 @@ button[type="submit"]:disabled {
 }
 
 #resume-filename {
-  color: #8b8b9e;
+  color: #64748b;
   font-size: 0.875rem;
   word-break: break-all;
 }
@@ -337,13 +344,14 @@ button[type="submit"]:disabled {
 }
 
 #resume-btn {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: #f97316;
   color: #fff;
 }
 
 #resume-btn:hover:not(:disabled) {
+  background: #ea580c;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 #fresh-btn {
@@ -353,7 +361,7 @@ button[type="submit"]:disabled {
 }
 
 #fresh-btn:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.05);
 }
 
 #resume-btn:disabled, #fresh-btn:disabled {
@@ -364,10 +372,10 @@ button[type="submit"]:disabled {
 #resume-error {
   margin-top: 12px;
   padding: 10px;
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 6px;
-  color: #ef4444;
+  color: #dc2626;
   font-size: 0.875rem;
 }
 
@@ -375,7 +383,6 @@ button[type="submit"]:disabled {
    ACCESSIBILITY
    ============================================================================ */
 
-/* Screen reader only - visually hidden but accessible */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -388,13 +395,12 @@ button[type="submit"]:disabled {
   border: 0;
 }
 
-/* Skip link - visible only when focused */
 .skip-link {
   position: absolute;
   top: -40px;
   left: 0;
   padding: 8px 16px;
-  background: #4f46e5;
+  background: #f97316;
   color: #fff;
   text-decoration: none;
   font-weight: 600;
@@ -404,21 +410,19 @@ button[type="submit"]:disabled {
 
 .skip-link:focus {
   top: 0;
-  outline: 2px solid #fff;
+  outline: 2px solid #1e293b;
   outline-offset: 2px;
 }
 
-/* Optional label text styling */
 .optional {
-  color: #6b6b7b;
+  color: #94a3b8;
   font-weight: 400;
 }
 
-/* Focus indicators for better keyboard navigation */
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid #f97316;
   outline-offset: 2px;
 }
 
@@ -434,9 +438,9 @@ textarea:focus-visible {
 }
 
 #validation-message.error {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+  color: #dc2626;
 }
 
 /* ============================================================================
@@ -447,33 +451,19 @@ textarea:focus-visible {
   max-width: 500px;
   margin: 80px auto;
   padding: 40px;
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
   border: 2px solid rgba(239, 68, 68, 0.3);
   border-radius: 12px;
   text-align: center;
-  color: #e8e8e8;
+  color: #1e293b;
 }
 
 .noscript-warning h2 {
-  color: #ef4444;
+  color: #dc2626;
   margin-bottom: 16px;
 }
 
 .noscript-warning p {
-  color: #c8c8d8;
+  color: #334155;
   line-height: 1.6;
-}
-
-/* ============================================================================
-   PROGRESS DETAILS - FLEXBOX FIX
-   ============================================================================ */
-
-/* Replace float with flexbox for progress details */
-.progress-details {
-  margin-top: 12px;
-  font-size: 0.875rem;
-  color: #8b8b9e;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
